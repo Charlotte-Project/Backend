@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String      @id @default(cuid())
+  firstName        String?     @map("first_name")
+  lastName         String?     @map("last_name")
+  email            String      @unique
+  hashedPassword   String      @map("hashed_password")
+  photo            String?     @default("not-specified")
+  isEmailConfirmed Boolean     @default(false) @map("is_email_confirmed")
+  isFirstLogin     Boolean     @default(false) @map("is_first_login")
+  lastLogin        DateTime    @updatedAt @map("last_login")
+  appLanguage      AppLanguage @default(EN)
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  products Product[]
+  reviews  Review[]
+  order    Order[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sellerId    String   @map("seller_id")
+  title       String
+  description String
+  content     String
+  attachments String[]
+  price       Decimal
+  stock       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  reviews        Review[]
+  orders         Order[]
+  seller         User                   @relation(fields: [sellerId], references: [id])
+  categories     ProductCategory[]
+  specifications ProductSpecification[]
+
+  @@map("products")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  icon      String
+  parentId  String?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts ProductCategory[]
+
+  @@map("categories")
+}
+
+model ProductCategory {
+  productId  String @map("product_id")
+  categoryId String @map("category_id")
+
+  product  Product  @relation(fields: [productId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
+  @@map("product_categories")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String   @map("product_id")
+  userId    String?  @map("user_id")
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  buyerId    String      @map("buyer_id")
+  productId  String
+  totalPrice Int         @map("total_price")
+  status     OrderStatus
+  orderDate  DateTime    @default(now()) @map("order_date")
+
+  User    User?    @relation(fields: [buyerId], references: [id])
+  Product Product? @relation(fields: [productId], references: [id])
+
+  @@map("orders")
+}
+
+model ProductSpecification {
+  id        String @id @default(cuid())
+  productId String @map("product_id")
+  key       String
+  value     String
+
+  Product Product @relation(fields: [productId], references: [id])
+
+  @@map("product_specification")
+}
+
+enum AppLanguage {
+  EN
+  UK
+}
+
+enum RelatedTable {
+  Product
+  User
+  Category
+}
+
+enum OrderStatus {
+  Pending
+  Fulfield
+  Canceled
+}
