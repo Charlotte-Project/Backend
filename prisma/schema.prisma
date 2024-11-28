@@ -18,6 +18,8 @@ model User {
   isFirstLogin     Boolean     @default(false) @map("is_first_login")
   lastLogin        DateTime    @updatedAt @map("last_login")
   appLanguage      AppLanguage @default(EN)
+  roles            Roles[]     @default([USER])
+  hashedRt         String?     @map("hashed_rt")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
 
@@ -113,15 +115,14 @@ model ProductSpecification {
   @@map("product_specification")
 }
 
+enum Roles {
+  ADMIN
+  USER
+}
+
 enum AppLanguage {
   EN
   UK
-}
-
-enum RelatedTable {
-  Product
-  User
-  Category
 }
 
 enum OrderStatus {
