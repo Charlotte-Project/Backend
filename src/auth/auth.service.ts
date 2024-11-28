@@ -23,7 +23,6 @@ export class AuthService {
 
   async signUp(dto: AuthDto): Promise<Tokens> {
     const oldUser = await this.userService.findByEmail(dto.email);
-
     if (oldUser) {
       throw new BadRequestException('User already exist');
     }
@@ -73,7 +72,7 @@ export class AuthService {
 
   async refreshTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.userService.findById(userId);
-    if (!user || !user.hashedRt) {
+    if (!user?.hashedRt) {
       throw new ForbiddenException('Access Denied');
     }
 

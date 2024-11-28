@@ -1,11 +1,11 @@
 -- CreateEnum
+CREATE TYPE "Roles" AS ENUM ('ADMIN', 'USER');
+
+-- CreateEnum
 CREATE TYPE "AppLanguage" AS ENUM ('EN', 'UK');
 
 -- CreateEnum
-CREATE TYPE "RelatedTable" AS ENUM ('Product', 'User', 'Category');
-
--- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('Pending', 'Fulfield');
+CREATE TYPE "OrderStatus" AS ENUM ('Pending', 'Fulfield', 'Canceled');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -19,6 +19,8 @@ CREATE TABLE "users" (
     "is_first_login" BOOLEAN NOT NULL DEFAULT false,
     "last_login" TIMESTAMP(3) NOT NULL,
     "appLanguage" "AppLanguage" NOT NULL DEFAULT 'EN',
+    "roles" "Roles"[] DEFAULT ARRAY['USER']::"Roles"[],
+    "hashed_rt" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -122,6 +124,3 @@ ALTER TABLE "orders" ADD CONSTRAINT "orders_productId_fkey" FOREIGN KEY ("produc
 
 -- AddForeignKey
 ALTER TABLE "product_specification" ADD CONSTRAINT "product_specification_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
-
-ALTER TABLE reviews ADD CONSTRAINT rating_check CHECK (rating >= 1 AND rating <= 5);

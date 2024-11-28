@@ -41,6 +41,4 @@ export class UserService {
   findAll(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
-
-  delete() {}
 }
