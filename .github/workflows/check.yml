@@ -40,8 +40,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set JAVA_HOME
-        run: echo "JAVA_HOME=${{ env.JAVA_HOME_17_X64 }}" >> $GITHUB_ENV
+      - name: Set JAVA_HOME and Update PATH
+        run: |
+          echo "JAVA_HOME=${{ env.JAVA_HOME_17_X64 }}" >> $GITHUB_ENV
+          echo "PATH=${{ env.JAVA_HOME_17_X64 }}/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Debug JAVA_HOME
+        run: |
+          echo "JAVA_HOME=${JAVA_HOME}"
+          echo "PATH=${PATH}"
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1.5
