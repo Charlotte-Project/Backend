@@ -31,15 +31,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Install dependencies
         run: npm ci
-      - name: Setup JDK 17
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Charlotte-Project_Backend
+            -Dsonar.organization=charlotte-project
+            -Dsonar.projectName=Backend
+            -Dsonar.sources=.
