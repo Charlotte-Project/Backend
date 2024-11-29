@@ -15,7 +15,6 @@ jobs:
         run: npm run lint
 
   test:
-    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,6 +39,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=${{ env.JAVA_HOME_17_X64 }}" >> $GITHUB_ENV
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1.5
