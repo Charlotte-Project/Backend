@@ -14,8 +14,8 @@ model User {
   email            String      @unique
   hashedPassword   String      @map("hashed_password")
   photo            String?     @default("not-specified")
-  isEmailConfirmed Boolean     @default(false) @map("is_email_confirmed")
-  isFirstLogin     Boolean     @default(false) @map("is_first_login")
+  isEmailConfirmed Boolean     @default(true) @map("is_email_confirmed")
+  isFirstLogin     Boolean     @default(true) @map("is_first_login")
   lastLogin        DateTime    @updatedAt @map("last_login")
   appLanguage      AppLanguage @default(EN)
   roles            Roles[]     @default([USER])
@@ -94,7 +94,7 @@ model Order {
   id         String      @id @default(cuid())
   buyerId    String      @map("buyer_id")
   productId  String
-  totalPrice Int         @map("total_price")
+  totalPrice Decimal     @map("total_price")
   status     OrderStatus
   orderDate  DateTime    @default(now()) @map("order_date")
 
