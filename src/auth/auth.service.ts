@@ -102,7 +102,7 @@ export class AuthService {
   async getTokens(userId: string, email: string): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
-      email: email,
+      email,
     };
 
     const [at, rt] = await Promise.all([
