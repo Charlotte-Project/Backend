@@ -15,7 +15,6 @@ model User {
   hashedPassword   String      @map("hashed_password")
   photo            String?     @default("not-specified")
   isEmailConfirmed Boolean     @default(true) @map("is_email_confirmed")
-  isFirstLogin     Boolean     @default(true) @map("is_first_login")
   lastLogin        DateTime    @updatedAt @map("last_login")
   appLanguage      AppLanguage @default(EN)
   roles            Roles[]     @default([USER])

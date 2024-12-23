@@ -10,9 +10,14 @@ import { JwtPayload, Tokens } from '~/auth/types';
 import { JwtService } from '@nestjs/jwt';
 import { HashingService } from '~/hashing/hashing.service';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import * as process from 'node:process';
 
 @Injectable()
 export class AuthService {
+  readonly REFRESH_TOKEN_NAME = 'refreshToken';
+  readonly EXPIRE_DAY_REFRESH_TOKEN = 15;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
@@ -30,7 +35,7 @@ export class AuthService {
     const user = await this.userService.save(dto);
 
     const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRt(user.id, tokens.refresh_token);
+    await this.updateRt(user.id, tokens.refreshToken);
     return tokens;
   }
 
@@ -49,7 +54,7 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRt(user.id, tokens.refresh_token);
+    await this.updateRt(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -82,7 +87,7 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRt(user.id, tokens.refresh_token);
+    await this.updateRt(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -112,13 +117,33 @@ export class AuthService {
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),
-        expiresIn: '15d',
+        expiresIn: this.EXPIRE_DAY_REFRESH_TOKEN + 'd',
       }),
     ]);
 
     return {
-      access_token: at,
-      refresh_token: rt,
+      accessToken: at,
+      refreshToken: rt,
     };
+  }
+
+  private getCookieOptions() {
+    return {
+      httpOnly: true,
+      domain: this.config.get<string>('SERVER_DOMAIN') || undefined,
+      secure: process.env.NODE_ENV === 'prod',
+      sameSite: 'strict' as const,
+    };
+  }
+
+  async addRtToResponse(res: Response, rt: string) {
+    res.cookie(this.REFRESH_TOKEN_NAME, rt, {
+      ...this.getCookieOptions(),
+      maxAge: this.EXPIRE_DAY_REFRESH_TOKEN * 24 * 60 * 60 * 1000,
+    });
+  }
+
+  async removeRtFromResponse(res: Response) {
+    res.clearCookie(this.REFRESH_TOKEN_NAME, this.getCookieOptions());
   }
 }

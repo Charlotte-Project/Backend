@@ -84,8 +84,8 @@ describe('Auth service', () => {
         .spyOn(userService, 'save')
         .mockResolvedValue({ id: '1', email: 'test@example.com' } as User);
       jest.spyOn(authService, 'getTokens').mockResolvedValue({
-        access_token: 'accessToken',
-        refresh_token: 'refreshToken',
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
       });
       jest.spyOn(authService, 'updateRt').mockResolvedValue();
 
@@ -95,8 +95,8 @@ describe('Auth service', () => {
       });
 
       expect(tokens).toEqual({
-        access_token: 'accessToken',
-        refresh_token: 'refreshToken',
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
       });
     });
   });
@@ -129,8 +129,8 @@ describe('Auth service', () => {
       } as User);
       jest.spyOn(hashingService, 'compare').mockResolvedValue(true);
       jest.spyOn(authService, 'getTokens').mockResolvedValue({
-        access_token: 'accessToken',
-        refresh_token: 'refreshToken',
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
       });
 
       const tokens = await authService.signIn({
@@ -139,8 +139,8 @@ describe('Auth service', () => {
       });
 
       expect(tokens).toEqual({
-        access_token: 'accessToken',
-        refresh_token: 'refreshToken',
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
       });
     });
   });
@@ -183,16 +183,16 @@ describe('Auth service', () => {
       } as User);
       jest.spyOn(hashingService, 'compare').mockResolvedValue(true);
       jest.spyOn(authService, 'getTokens').mockResolvedValue({
-        access_token: 'newAccessToken',
-        refresh_token: 'newRefreshToken',
+        accessToken: 'newAccessToken',
+        refreshToken: 'newRefreshToken',
       });
       jest.spyOn(authService, 'updateRt').mockResolvedValue();
 
       const tokens = await authService.refreshTokens('1', 'refreshToken');
 
       expect(tokens).toEqual({
-        access_token: 'newAccessToken',
-        refresh_token: 'newRefreshToken',
+        accessToken: 'newAccessToken',
+        refreshToken: 'newRefreshToken',
       });
     });
   });

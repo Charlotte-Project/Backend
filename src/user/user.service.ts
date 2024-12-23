@@ -17,7 +17,8 @@ export class UserService {
       data: {
         email: dto.email,
         hashedPassword: hashedPassword,
-        isFirstLogin: true,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
       },
     });
   }
