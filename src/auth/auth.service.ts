@@ -127,15 +127,6 @@ export class AuthService {
     };
   }
 
-  private getCookieOptions() {
-    return {
-      httpOnly: true,
-      domain: this.config.get<string>('SERVER_DOMAIN') || undefined,
-      secure: process.env.NODE_ENV === 'prod',
-      sameSite: 'strict' as const,
-    };
-  }
-
   async addRtToResponse(res: Response, rt: string) {
     res.cookie(this.REFRESH_TOKEN_NAME, rt, {
       ...this.getCookieOptions(),
@@ -145,5 +136,14 @@ export class AuthService {
 
   async removeRtFromResponse(res: Response) {
     res.clearCookie(this.REFRESH_TOKEN_NAME, this.getCookieOptions());
+  }
+
+  private getCookieOptions() {
+    return {
+      httpOnly: true,
+      domain: this.config.get<string>('SERVER_DOMAIN') || undefined,
+      secure: process.env.NODE_ENV === 'prod',
+      sameSite: 'strict' as const,
+    };
   }
 }

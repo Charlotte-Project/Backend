@@ -18,13 +18,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config src/test/jest-e2e.json",
-    "migrate:dev": "dotenv -e .dev.env -- npx prisma migrate dev",
-    "migrate:prod": "dotenv -e .prod.env -- npx prisma migrate deploy",
     "prepare": "husky install"
   },
   "lint-staged": {
     "*.ts": [
-      "eslint"
+      "eslint --fix"
     ]
   },
   "dependencies": {
@@ -97,5 +95,8 @@
     "moduleNameMapper": {
       "^~/(.*)$": "<rootDir>/$1"
     }
+  },
+  "prisma": {
+    "seed": "dotenv -e .dev.env -- ts-node prisma/seed.ts"
   }
 }

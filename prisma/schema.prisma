@@ -13,9 +13,8 @@ model User {
   lastName         String?     @map("last_name")
   email            String      @unique
   hashedPassword   String      @map("hashed_password")
-  photo            String?     @default("not-specified")
-  isEmailConfirmed Boolean     @default(true) @map("is_email_confirmed")
-  lastLogin        DateTime    @updatedAt @map("last_login")
+  photo            String?
+  isEmailConfirmed Boolean     @default(false) @map("is_email_confirmed")
   appLanguage      AppLanguage @default(EN)
   roles            Roles[]     @default([USER])
   hashedRt         String?     @map("hashed_rt")
@@ -34,10 +33,9 @@ model Product {
   sellerId    String   @map("seller_id")
   title       String
   description String
-  content     String
-  attachments String[]
+  images      String[]
   price       Decimal
-  stock       Int
+  stock       Int?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -51,21 +49,20 @@ model Product {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  icon      String
-  parentId  String?  @map("parent_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id       Int               @id @default(autoincrement())
+  name     String
+  parentId Int?              @map("parent_id")
+  icon     String?
+  isGroup  Boolean?          @default(false) @map("is_group")
+  products ProductCategory[]
 
-  posts ProductCategory[]
-
+  @@index([parentId])
   @@map("categories")
 }
 
 model ProductCategory {
   productId  String @map("product_id")
-  categoryId String @map("category_id")
+  categoryId Int    @map("category_id")
 
   product  Product  @relation(fields: [productId], references: [id])
   category Category @relation(fields: [categoryId], references: [id])
@@ -125,7 +122,7 @@ enum AppLanguage {
 }
 
 enum OrderStatus {
-  Pending
-  Fulfield
-  Canceled
+  PENDING
+  CANCELED
+  FULFILLED
 }

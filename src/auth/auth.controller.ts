@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -11,8 +12,8 @@ import { AuthService } from '~/auth/auth.service';
 import { AuthDto } from '~/auth/dto';
 import { AccessToken } from '~/auth/types';
 import { RtGuard } from '~/common/guards';
-import { GetCurrentUser, GetCurrentUserId, Public } from '~/common/decorators';
-import { Response } from 'express';
+import { GetCurrentUserId, Public } from '~/common/decorators';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +34,6 @@ export class AuthController {
 
   @Public()
   @Post('/sign-in')
-  @HttpCode(HttpStatus.OK)
   async signIn(
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
@@ -45,7 +45,6 @@ export class AuthController {
   }
 
   @Post('/logout')
-  @HttpCode(HttpStatus.OK)
   async logout(
     @GetCurrentUserId() userId: string,
     @Res({ passthrough: true }) res: Response,
@@ -58,15 +57,15 @@ export class AuthController {
   @Public()
   @UseGuards(RtGuard)
   @Post('/refresh')
-  @HttpCode(HttpStatus.OK)
   async refresh(
     @GetCurrentUserId() userId: string,
-    @GetCurrentUser('refreshToken') rt: string,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AccessToken> {
+    const { refreshToken: refreshTokenFromCookies } = req.cookies;
     const { accessToken, refreshToken } = await this.authService.refreshTokens(
       userId,
-      rt,
+      refreshTokenFromCookies,
     );
     await this.authService.addRtToResponse(res, refreshToken);
 
